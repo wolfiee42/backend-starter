@@ -1,17 +1,16 @@
 import { Router } from "express";
-import { PdfRoutes } from "../modules/pdf/pdf.routes";
 
 const router = Router();
 
 
 const moduleRoutes = [
     {
-        path: '/pdf',
-        route: PdfRoutes
+        path: '',
+        route: ''
     },
 ];
 
-moduleRoutes.forEach((route) => router.use(route.path, route.route))
+// moduleRoutes.forEach((route) => router.use(route.path, route.route))
 
 
 export default router;
