@@ -5,10 +5,12 @@ import API_Error from '../errors/apiError'
 import config from '../config'
 import { verifyToken } from '../utils/jwtTokenGenerator'
 import { PermissionManager } from '../lib/pm/PermissionManager'
+import { Role } from '../interface/type'
 
 //Auth Guard
 const Authentication =
-  async (...requiredRoles: string[]) =>
+  async () =>
+    //  async (...requiredRoles: string[]) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req?.cookies?.accessToken as string
@@ -34,7 +36,7 @@ const Authentication =
       }
 
       const pm = new PermissionManager({
-        roles: verifiedUser.roles.map(role => role.key),
+        roles: verifiedUser.roles.map((role: Role) => role.key),
         permissions: verifiedUser.permissions,
       })
 
@@ -42,14 +44,15 @@ const Authentication =
       req.user = verifiedUser
       req.pm = pm
 
-      if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
-        return next(
-          new API_Error(
-            StatusCodes.FORBIDDEN,
-            'Access denied: Invalid credentials or unauthorized access.',
-          ),
-        )
-      }
+      // removing this code because we are checking it in authorize.ts
+      // if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
+      //   return next(
+      //     new API_Error(
+      //       StatusCodes.FORBIDDEN,
+      //       'Access denied: Invalid credentials or unauthorized access.',
+      //     ),
+      //   )
+      // }
 
       next()
     } catch (error) {
