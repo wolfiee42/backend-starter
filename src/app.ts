@@ -5,6 +5,7 @@ import notFoundAPI from './middleware/notFoundAPI'
 import router from './routes'
 import globalErrorHandler from './middleware/globalErrorHandler'
 
+
 const app: Application = express()
 
 //parsers
@@ -12,10 +13,7 @@ app.use(express.json())
 
 app.use(
   cors({
-    origin: [
-      'http://localhost:3000',
-      'http://localhost:5173',
-    ],
+    origin: ['http://localhost:3000', 'http://localhost:5173'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
   }),

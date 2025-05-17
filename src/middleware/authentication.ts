@@ -1,15 +1,14 @@
 import { NextFunction, Request, Response } from 'express'
-// import ApiError from "../../error/apiError";
 import { StatusCodes } from 'http-status-codes'
-// import config from "../../config";
 import { Secret } from 'jsonwebtoken'
 import API_Error from '../errors/apiError'
 import config from '../config'
 import { verifyToken } from '../utils/jwtTokenGenerator'
-// import { jwtHelpers } from "../../helper/jwtHelper";
+import { PermissionManager } from '../lib/pm/PermissionManager'
+
 //Auth Guard
 const Authentication =
-  (...requiredRoles: string[]) =>
+  async (...requiredRoles: string[]) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req?.cookies?.accessToken as string
@@ -33,8 +32,15 @@ const Authentication =
           ),
         )
       }
+
+      const pm = new PermissionManager({
+        roles: verifiedUser.roles.map(role => role.key),
+        permissions: verifiedUser.permissions,
+      })
+
       // verified user
       req.user = verifiedUser
+      req.pm = pm
 
       if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
         return next(
@@ -44,6 +50,7 @@ const Authentication =
           ),
         )
       }
+
       next()
     } catch (error) {
       console.error(error)
